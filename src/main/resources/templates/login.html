@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Login</title>
+  <!-- Стили Firebase UI -->
+  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/5.0.0/firebase-ui-auth.css" />
+
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #333; /* Темный цвет фона */
+      color: white; /* Белый текст */
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #firebaseui-auth-container {
+      width: 80%;
+      max-width: 400px;
+    }
+
+    /* Стили для темной темы Firebase UI */
+    .firebaseui-container {
+      background-color: #444;
+      border-color: #555;
+    }
+
+    .firebaseui-card-content {
+      color: white;
+    }
+
+    .firebaseui-textfield {
+      color: white;
+    }
+
+    .firebaseui-textfield .firebaseui-input {
+      background-color: #555;
+      border-color: #666;
+      color: white;
+    }
+
+    .firebaseui-label {
+      color: white;
+    }
+
+    .firebaseui-button {
+      background-color: #555;
+      color: white;
+    }
+
+    .firebaseui-button:hover {
+      background-color: #666;
+    }
+
+    .firebaseui-link {
+      color: #aaa;
+    }
+
+    .firebaseui-link:hover {
+      color: #fff;
+    }
+
+    .firebaseui-idp-text {
+      color: white;
+    }
+    .firebaseui-title {
+      color: white !important;
+    }
+
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div id="firebaseui-auth-container"></div>
+
+<!-- Firebase App (the core Firebase SDK) -->
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+<!-- Add Firebase products that you want to use -->
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+<!-- Подключение Firebase UI -->
+<script src="https://www.gstatic.com/firebasejs/ui/5.0.0/firebase-ui-auth.js"></script>
+
+<script>
+  // Инициализация Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyD-VQSsPiyKBBqLzDcJs2GypGeDcbebKo4",
+    authDomain: "androidgachaapp.firebaseapp.com",
+    databaseURL: "https://androidgachaapp-default-rtdb.firebaseio.com",
+    projectId: "androidgachaapp",
+    storageBucket: "androidgachaapp.appspot.com",
+    messagingSenderId: "1095203368253",
+    appId: "1:1095203368253:web:a55209b026b21dafade954"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  // Инициализация Firebase UI
+  const ui = new firebaseui.auth.AuthUI(firebase.auth());
+
+  const uiConfig = {
+    signInOptions: [
+      firebase.auth.EmailAuthProvider.PROVIDER_ID
+    ],
+    callbacks: {
+      signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+        const user = authResult.user;
+        user.getIdToken(true).then(function(idToken) {
+          // Отправляем JWT на сервер для аутентификации и входа
+          fetch('/authenticate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              token: idToken
+            })
+          }).then(response => {
+            if (response.ok) {
+              // Если аутентификация прошла успешно на сервере, перенаправляем пользователя
+              window.location.href = '/home';
+            } else {
+              alert('Failed to authenticate with the server.');
+            }
+          });
+        }).catch(function(error) {
+          console.error('Failed to get JWT:', error);
+        });
+
+        // Prevents the default redirect
+        return false;
+      }
+    }
+  };
+
+  ui.start('#firebaseui-auth-container', uiConfig);
+</script>
+
+</body>
+</html>

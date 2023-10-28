@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #video-background {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -100;
+            transform: translate(-50%, -50%);
+        }
+
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background-color: black;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        #home-icon {
+            width: 60px;
+            cursor: pointer;
+        }
+
+        .button-style {
+            text-decoration: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.5em;
+            margin-left: 20px;
+        }
+
+        .button-style img {
+            margin-left: 5px;
+            max-height: 24px;
+            vertical-align: middle;
+        }
+
+        .button-style span {
+            vertical-align: middle;
+        }
+
+        #login-button {
+            background-color: #e1eaeb;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-right: 20px;
+            border-radius: 5px;
+        }
+
+        #download-button {
+            margin-left: 30px;
+            background-color: #717fbf;
+            padding: 10px 40px;
+            color: white;
+            border: none;
+            text-decoration: none;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+
+        #download-button:hover {
+            background-color: #777;
+        }
+
+        #user-section {
+            display: flex;
+            align-items: center;
+            position: relative;
+            margin-right: 30px;
+            padding: 0;
+        }
+
+        #dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: black;
+            color: white; /* Исправление видимости текста */
+            border: 1px solid white;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            z-index: 2;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #dropdown-menu li {
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #dropdown-menu li:hover {
+            background-color: #555;
+        }
+        #login-button:hover {
+            background-color: #c2c3c4;
+        }
+
+        #user-email:after {
+            content: "▼";
+            margin: 0;
+            padding: 0;
+        }
+        #user-email span {
+            display: inline-block;
+            padding-right: 0;
+        }
+
+        .button-style:hover {
+            transform: translateY(-3px); /* Анимация поднятия вверх */
+            transition: transform 0.2s;
+        }
+
+        .menu-center {
+            display: flex;
+            align-items: center; /* Выравнивание по центру вертикально */
+            justify-content: center; /* Выравнивание по центру горизонтально */
+            flex: 1;
+        }
+
+        .button-style img {
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10;
+        }
+
+        /* Стили для модального окна */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            z-index: 11;
+            border-radius: 5px;
+        }
+
+        .modal input {
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .modal button {
+            padding: 10px 20px;
+            background-color: #717fbf;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .modal button:hover {
+            background-color: #777;
+        }
+    </style>
+</head>
+
+<body>
+<video id="video-background" autoplay loop muted>
+    <source src="site_background.mp4" type="video/mp4">
+</video>
+
+<div id="header">
+    <div style="display: flex; align-items: center;">
+        <img id="home-icon" src="/images/app_icon.png" alt="Home" onclick="redirectToHome()" />
+        <a id="download-button" href="/download">Download</a>
+    </div>
+    <div class="menu-center">
+        <a href="/home" class="button-style">Home</a>
+        <a href="/news" class="button-style">News</a>
+        <a href="/support" class="button-style">Support</a>
+    </div>
+    <div id="user-section">
+        <a id="user-email" href="#" class="button-style" onclick="toggleDropdown()" style="display: none;">
+    <span>
+        <span id="masked-email" th:text="${userEmail}"></span> <!-- новый элемент -->
+    </span>
+        </a>
+
+
+        <a id="login-button" href="/login" class="button-style" style="display: block;">Log In<img src="/images/user_default_icon.png" alt="Icon"></a>
+        <ul id="dropdown-menu">
+            <li onclick="window.location.href='/account'">Account</li>
+            <li onclick="window.location.href='/logout'">Log Out</li>
+        </ul>
+    </div>
+</div>
+<div class="overlay" id="overlay"></div>
+<div class="modal" id="usernameModal">
+    <p>Please enter your username:</p>
+    <input type="text" id="usernameInput" placeholder="Enter username">
+    <button onclick="submitUsername()">Submit</button>
+</div>
+
+<input type="hidden" id="uid_value" th:value="${uid}" />
+
+<input type="hidden" id="promptForUsername" th:value="${promptForUsername}" />
+
+
+
+
+<script>
+    function maskEmail() {
+        const emailElement = document.getElementById('masked-email');
+        const email = emailElement.textContent;
+        const maskedEmail = email.replace(/(.).*(.@.*)/, (match, p1, p2) => p1 + '***' + p2);
+        emailElement.textContent = maskedEmail;
+    }
+
+    function redirectToHome() {
+        window.location.href = "/home";
+    }
+
+    function toggleDropdown() {
+        const dropdownMenu = document.getElementById("dropdown-menu");
+        if (dropdownMenu.style.display === "none" || dropdownMenu.style.display === "") {
+            dropdownMenu.style.display = "block";
+        } else {
+            dropdownMenu.style.display = "none";
+        }
+    }
+
+    function checkAuthentication() {
+        const userEmailElement = document.getElementById("user-email");
+        const loginButton = document.getElementById("login-button");
+        const dropdownMenu = document.getElementById("dropdown-menu");
+        const promptForUsername = document.getElementById("promptForUsername").value;
+
+        if (userEmailElement.textContent && userEmailElement.textContent.trim() !== "") {
+            loginButton.style.display = "none";
+            userEmailElement.style.display = "block";
+            maskEmail();
+
+            if (promptForUsername === "true") {
+                showUsernameModal();
+            }
+        } else {
+            loginButton.style.display = "block";
+            userEmailElement.style.display = "none";
+            dropdownMenu.style.display = "none";
+        }
+    }
+
+
+    function showUsernameModal() {
+        console.error("SHOW MODEL\n\n\n\n\n\n")
+        document.getElementById("overlay").style.display = "block";
+        document.getElementById("usernameModal").style.display = "block";
+    }
+
+    function submitUsername() {
+        const username = document.getElementById("usernameInput").value;
+        let uid_value = document.getElementById("uid_value").value;
+        fetch('/change-username', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                uid: uid_value,
+                username: username
+            })
+        }).then(response => {
+            if (response.ok) {
+                // Закрыть модальное окно после успешной смены `username`
+                document.getElementById("overlay").style.display = "none";
+                document.getElementById("usernameModal").style.display = "none";
+            } else {
+                // Обработка ошибки
+                console.error("Failed to change username");
+            }
+        }).catch(error => {
+            console.error("Error:", error);
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Проверяем наличие username сразу после загрузки страницы
+        const hasUsername = [[${hasUsername}]];
+        if(!hasUsername) {
+            showUsernameModal();
+        }
+    });
+
+
+
+    // Call the function upon page load
+    window.onload = function() {
+        checkAuthentication();
+    }
+
+</script>
+
+
+</body>
+
+</html>
+
+
+
+
