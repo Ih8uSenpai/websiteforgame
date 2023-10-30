@@ -56,9 +56,7 @@ class FirebaseServiceTest {
             FirebaseApp.initializeApp(options);
         }
 
-        // Убедитесь, что вы возвращаете правильный тип объекта:
         when(firebaseDatabase.getReference(anyString())).thenReturn(siteUsersRef);
-
         when(siteUsersRef.child(anyString())).thenReturn(userRef);
 
         firebaseService = new FirebaseService(firebaseAuth, firebaseDatabase);
